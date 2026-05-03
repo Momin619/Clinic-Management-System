@@ -57,12 +57,9 @@ export const loginService = async (identifier: string, password: string) => {
 };
 
 // REFRESH
-export const refreshService = (token: string) => {
-  const decoded = jwt.verify(token, process.env.REFRESH_SECRET!) as {
-    id: string;
-  };
+export const refreshService = (userId: string) => {
+  const accessToken = createAccessToken(userId);
+  const refreshToken = createRefreshToken(userId);
 
-  const newAccessToken = createAccessToken(decoded.id);
-
-  return newAccessToken;
+  return { accessToken, refreshToken };
 };

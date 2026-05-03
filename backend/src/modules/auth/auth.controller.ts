@@ -1,14 +1,12 @@
 import { Request, Response } from "express";
 import { signupService, loginService, refreshService } from "./auth.service.js";
-import jwt from "jsonwebtoken";
+
 import Admin from "./auth.model.js";
-import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from "../../config/env.js";
+
 import {
   accessCookieOptions,
   refreshCookieOptions,
 } from "../../config/cookieConfig.js";
-
-import { TokenPayload, AuthRequest } from "./auth.types.js";
 
 // SIGNUP
 export const signup = async (req: Request, res: Response) => {
@@ -48,7 +46,7 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-export const me = async (req: AuthRequest, res: Response) => {
+export const me = async (req: Request, res: Response) => {
   const userId = req.user?.id;
 
   if (!userId) {
@@ -62,37 +60,12 @@ export const me = async (req: AuthRequest, res: Response) => {
 
 // REFRESH TOKEN
 export const refresh = (req: Request, res: Response) => {
-  const refreshToken = req.cookies?.refreshToken;
+  const userId = req.user!.id; // from middleware
 
-  if (!refreshToken) {
-    return res.status(401).json({ message: "No refresh token" });
-  }
+  const tokens = refreshService(userId);
 
-  try {
-    // verify old refresh token
-    const decoded = jwt.verify(
-      refreshToken,
-      REFRESH_TOKEN_SECRET,
-    ) as TokenPayload;
+  res.cookie("accessToken", tokens.accessToken, accessCookieOptions);
+  res.cookie("refreshToken", tokens.refreshToken, refreshCookieOptions);
 
-    const userId = decoded.id;
-
-    // 🔥 generate NEW tokens
-    const newAccessToken = jwt.sign({ id: userId }, ACCESS_TOKEN_SECRET, {
-      expiresIn: "15m",
-    });
-
-    const newRefreshToken = jwt.sign({ id: userId }, REFRESH_TOKEN_SECRET, {
-      expiresIn: "7d",
-    });
-
-    // 🔐 overwrite cookies
-    res.cookie("accessToken", newAccessToken, accessCookieOptions);
-
-    res.cookie("refreshToken", newRefreshToken, refreshCookieOptions);
-
-    return res.json({ message: "Tokens refreshed" });
-  } catch (err) {
-    return res.status(401).json({ message: "Invalid refresh token" });
-  }
+  return res.json({ message: "Tokens refreshed" });
 };
