@@ -1,6 +1,10 @@
 import chalk from "chalk";
-
-export const requestLogger = (req, res, next) => {
+import { Request, Response, NextFunction } from "express";
+export const requestLogger = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const start = Date.now();
 
   const time = chalk.white(`[${new Date().toISOString()}]`);
@@ -27,11 +31,16 @@ export const requestLogger = (req, res, next) => {
           ? chalk.yellow
           : chalk.red;
 
-    console.log(
-      `${chalk.white(`[${new Date().toISOString()}]`)} ${method} ${
-        req.originalUrl
-      } - ${statusColor(res.statusCode)} - ${chalk.cyan(duration + "ms")}`,
-    );
+    const base = `${chalk.white(`[${new Date().toISOString()}]`)} ${method} ${req.originalUrl} - ${statusColor(res.statusCode)} - ${chalk.cyan(duration + "ms")}`;
+
+    // only append error details if present
+    if (res.locals.errorCode) {
+      const code = chalk.red(`[${res.locals.errorCode}]`);
+      const msg = chalk.gray(res.locals.errorMessage);
+      console.log(`${base} ${code} ${msg}`);
+    } else {
+      console.log(base);
+    }
   });
 
   next();

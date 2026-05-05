@@ -1,0 +1,69 @@
+/auth/signup
+
+# ✅ happy path
+{ "name": "Ali", "email": "ali@email.com", "password": "password123" }
+# expects → 201, { success: true, message: "Account created successfully" }
+
+# ❌ zod validation — missing fields
+{ "name": "Ali" }
+# expects → 400, VALIDATION_ERROR
+
+# ❌ zod validation — bad email
+{ "name": "Ali", "email": "notanemail", "password": "password123" }
+# expects → 400, VALIDATION_ERROR
+
+# ❌ zod validation — short password
+{ "name": "Ali", "email": "ali@email.com", "password": "123" }
+# expects → 400, VALIDATION_ERROR
+
+# ❌ duplicate — run happy path twice
+{ "name": "Ali", "email": "ali@email.com", "password": "password123" }
+# expects → 409, AUTH_EMAIL_TAKEN
+
+
+/auth/login
+
+# ✅ happy path
+{ "identifier": "ali@email.com", "password": "password123" }
+# expects → 200, { success: true, data: { user: { name, email } } }
+# expects → cookies: accessToken + refreshToken set
+
+# ❌ wrong password
+{ "identifier": "ali@email.com", "password": "wrongpass" }
+# expects → 401, AUTH_INVALID_CREDENTIALS
+
+# ❌ user doesn't exist
+{ "identifier": "ghost@email.com", "password": "password123" }
+# expects → 401, AUTH_INVALID_CREDENTIALS
+
+# ❌ empty body
+{}
+# expects → 400, VALIDATION_ERROR
+
+
+/auth/me
+
+
+# ✅ happy path — send with valid accessToken cookie
+# expects → 200, { success: true, data: { user: { name, email } } }
+
+# ❌ no cookie at all
+# expects → 401, NO_TOKEN
+
+# ❌ expired accessToken cookie
+# expects → 401, TOKEN_EXPIRED
+
+# ❌ tampered token
+# expects → 401, INVALID_TOKEN
+
+/auth/refresh
+
+
+# ✅ happy path — send with valid refreshToken cookie
+# expects → 200, new cookies set
+
+# ❌ no refresh cookie
+# expects → 401, NO_REFRESH_TOKEN
+
+# ❌ invalid refresh token
+# expects → 401, INVALID_REFRESH_TOKEN

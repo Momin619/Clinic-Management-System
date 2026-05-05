@@ -1,71 +1,68 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { signupService, loginService, refreshService } from "./auth.service.js";
-
 import Admin from "./auth.model.js";
-
 import {
   accessCookieOptions,
   refreshCookieOptions,
 } from "../../config/cookieConfig.js";
+import { sendSuccess, sendError } from "../../utils/response-helper.js";
+import { AdminPublic } from "./auth.types.js";
 
-// SIGNUP
-export const signup = async (req: Request, res: Response) => {
+// SIGNUP — no data needed, just confirm it worked
+export const signup = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { name, email, password } = req.body;
-
-    const user = await signupService(name, email, password);
-
-    res.status(201).json(user);
-  } catch (err: any) {
-    res.status(400).json({
-      message: err.message,
-    });
+    await signupService(name, email, password);
+    return sendSuccess(res, "Account created successfully", 201);
+  } catch (err) {
+    next(err);
   }
 };
 
-// LOGIN
-export const login = async (req: Request, res: Response) => {
+// LOGIN — user object needed by frontend
+export const login = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { identifier, password } = req.body;
-
     const result = await loginService(identifier, password);
 
     res.cookie("accessToken", result.accessToken, accessCookieOptions);
-
     res.cookie("refreshToken", result.refreshToken, refreshCookieOptions);
 
-    res.json({
-      user: result.user,
-    });
-  } catch (err: any) {
-    console.log(err?.message);
-
-    res.status(400).json({
-      message: err.message,
-    });
+    return sendSuccess<{ user: AdminPublic }>(
+      res,
+      { user: result.user },
+      "Login successful",
+    );
+  } catch (err) {
+    next(err);
   }
 };
 
+// ME — user object needed to restore session
 export const me = async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const user = await Admin.findById(req.user!.id).select("name email");
 
-  if (!userId) {
-    return res.status(401).json({ message: "No user in request" });
+  if (!user) {
+    return sendError(res, 404, "NOT_FOUND", "Admin not found");
   }
 
-  const user = await Admin.findById(userId).select("name email");
-
-  res.json({ user });
+  return sendSuccess<{ user: AdminPublic }>(res, { user }, "Admin fetched");
 };
-
-// REFRESH TOKEN
+// REFRESH — only sets cookies, no data returned
 export const refresh = (req: Request, res: Response) => {
-  const userId = req.user!.id; // from middleware
-
+  const userId = req.user!.id;
   const tokens = refreshService(userId);
 
   res.cookie("accessToken", tokens.accessToken, accessCookieOptions);
   res.cookie("refreshToken", tokens.refreshToken, refreshCookieOptions);
 
-  return res.json({ message: "Tokens refreshed" });
+  return sendSuccess(res, "Tokens refreshed");
 };

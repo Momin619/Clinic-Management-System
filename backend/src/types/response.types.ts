@@ -3,11 +3,13 @@ export type ErrorCode =
   | "INVALID_TOKEN"
   | "TOKEN_EXPIRED"
   | "NO_REFRESH_TOKEN"
+  | "INVALID_REFRESH_TOKEN"
+  | "AUTH_INVALID_CREDENTIALS"
+  | "AUTH_EMAIL_TAKEN"
   | "VALIDATION_ERROR"
   | "UNAUTHORIZED"
-  | "SERVER_ERROR"
-  | "AUTH_ERROR"
-  | "INVALID_REFRESH_TOKEN";
+  | "NOT_FOUND"
+  | "SERVER_ERROR";
 
 export interface ApiError {
   success: false;
@@ -15,8 +17,13 @@ export interface ApiError {
   message: string;
 }
 
-export interface ApiResponse<T = unknown> {
+export interface ApiOk {
   success: true;
-  message?: string;
+  message: string; // ✓ required
+}
+
+export interface ApiResponse<T> {
+  success: true;
+  message: string; // ✓ required now
   data: T;
 }
