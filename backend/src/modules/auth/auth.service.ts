@@ -51,6 +51,7 @@ export const loginService = async (identifier: string, password: string) => {
 
   return {
     user: {
+      id: adminId,
       name: admin.name,
       email: admin.email,
     },

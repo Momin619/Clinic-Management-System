@@ -51,7 +51,7 @@ export function sendSuccess<T>(
   const body: ApiResponse<T> = {
     success: true,
     message: messageOrStatus as string, // ← always string in overload 2
-    data: dataOrMessage,
+    result: dataOrMessage,
   };
   return res.status(status).json(body);
 }

@@ -1,0 +1,11 @@
+:root {
+  --background: 0 0% 100%; /* light bg */
+  --foreground: 224 71% 4%; /* light text */
+}
+.dark {
+  --background: 224 71% 4%; /* dark bg */
+  --foreground: 210 20% 98%; /* dark text */
+}
+body {
+  @apply bg-background text-foreground;
+}

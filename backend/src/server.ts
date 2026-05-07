@@ -1,4 +1,5 @@
 import app from "./app.js";
+console.log("Server started");
 import connectDB from "./config/connectDB.js";
 import dotenv from "dotenv";
 dotenv.config();

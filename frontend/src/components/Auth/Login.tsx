@@ -2,6 +2,22 @@ import { useForm } from "react-hook-form";
 import { useAuth } from "../../context/AuthContext";
 import type { LoginData } from "../../types/auth";
 import { toast } from "react-hot-toast";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
+import { cn } from "../../lib/utils";
+import { navigateTo } from "../../utils/navigation";
+
+const LabelInputContainer = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => (
+  <div className={cn("flex w-full flex-col space-y-2", className)}>
+    {children}
+  </div>
+);
 
 export default function Login()
 {
@@ -19,67 +35,79 @@ export default function Login()
     {
       await login(data);
       toast.success("Login successful");
+      navigateTo("/dashboard"); // update path as needed
     } catch (err: any)
     {
-      toast.error(err.response?.data?.message || "Error");
+      toast.error(err.response?.data?.message || "Something went wrong dsdsd");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black transition-colors">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-w-md p-8 rounded-2xl bg-white/80 dark:bg-zinc-900/80 
-backdrop-blur-xl shadow-xl border border-gray-200 dark:border-zinc-800"
+    <div className="mx-auto w-full max-w-md rounded-2xl bg-white px-8 py-10
+      border border-neutral-200 shadow-lg
+      dark:bg-zinc-950 dark:border-zinc-800 dark:shadow-none">
 
-      >
-        <h1 className="text-2xl font-bold mb-6 text-black dark:text-white">
-          Login
-        </h1>
+      <h2 className="text-xl font-bold text-neutral-800 dark:text-neutral-200">
+        Welcome Back
+      </h2>
+      <p className="mt-2 max-w-sm text-sm text-neutral-600 dark:text-neutral-300">
+        Enter your credentials to sign in
+      </p>
 
-        {/* EMAIL OR NAME */}
-        <input
-          placeholder="Email or Name"
-          {...register("identifier", {
-            required: "Email or Name is required",
-          })}
-          className="w-full p-3 mb-2 rounded-lg bg-white dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 
-text-black dark:text-white outline-none focus:ring-2 focus:ring-blue-500 transition"
+      <form className="mt-6 mb-0" onSubmit={handleSubmit(onSubmit)}>
 
-        />
-        {errors.identifier && (
-          <p className="text-red-500 text-sm mb-2">
-            {errors.identifier.message}
-          </p>
-        )}
+        {/* Email or Name */}
+        <LabelInputContainer className="mb-4">
+          <Label htmlFor="identifier">Email or Name</Label>
+          <Input
+            id="identifier"
+            placeholder="john@example.com"
+            type="text"
+            {...register("identifier", {
+              required: "Email or name is required",
+            })}
+          />
+          {errors.identifier && (
+            <p className="text-xs text-red-500">{errors.identifier.message}</p>
+          )}
+        </LabelInputContainer>
 
-        {/* PASSWORD */}
-        <input
-          type="password"
-          placeholder="Password"
-          {...register("password", {
-            required: "Password is required",
-            minLength: {
-              value: 6,
-              message: "Password must be at least 6 characters",
-            },
-          })}
-          className="w-full p-3 mb-2 rounded-lg bg-white dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 
-text-black dark:text-white outline-none focus:ring-2 focus:ring-blue-500 transition"
+        {/* Password */}
+        <LabelInputContainer className="mb-8">
+          <Label htmlFor="password">Password</Label>
+          <Input
+            id="password"
+            placeholder="••••••••"
+            type="password"
+            {...register("password", {
+              required: "Password is required",
+              minLength: { value: 6, message: "At least 6 characters" },
+            })}
+          />
+          {errors.password && (
+            <p className="text-xs text-red-500">{errors.password.message}</p>
+          )}
+        </LabelInputContainer>
 
-        />
-        {errors.password && (
-          <p className="text-red-500 text-sm mb-2">
-            {errors.password.message}
-          </p>
-        )}
-
+        {/* Submit */}
         <button
           disabled={isSubmitting}
-          className="w-full mt-5 bg-green-600 hover:bg-green-700 active:scale-[0.98] transition-all duration-200 text-white p-2.5 rounded-lg font-medium cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+          type="submit"
+          className="cursor-pointer relative block h-10 w-full rounded-md
+            font-medium transition duration-300
+            bg-neutral-900 text-white hover:bg-neutral-700
+            dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200
+            disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {isSubmitting ? "Logging in..." : "Login"}
+          {isSubmitting ? "Signing in..." : "Sign In →"}
         </button>
+
+        <p className="mt-4 text-center text-sm text-neutral-600 dark:text-neutral-400">
+          Don't have an account?{" "}
+          <a href="/signup" className="text-blue-500 hover:underline">
+            Sign up
+          </a>
+        </p>
 
       </form>
     </div>

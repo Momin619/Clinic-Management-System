@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { REFRESH_TOKEN_SECRET } from "../../config/env.js";
 import { NextFunction, Response, Request } from "express";
 import { TokenPayload } from "../auth/auth.types.js";
-import { sendError } from "../../utils/response-helper.js";
+import { AppError } from "../../errors/AppError.js";
 
 export const protectRefresh = (
   req: Request,
@@ -12,7 +12,7 @@ export const protectRefresh = (
   const refreshToken = req.cookies?.refreshToken;
 
   if (!refreshToken) {
-    return sendError(res, 401, "NO_REFRESH_TOKEN", "Refresh token missing");
+    return next(new AppError(401, "NO_REFRESH_TOKEN", "Refresh token missing"));
   }
 
   try {
@@ -20,18 +20,15 @@ export const protectRefresh = (
       refreshToken,
       REFRESH_TOKEN_SECRET,
     ) as TokenPayload;
-
-    req.user = {
-      id: decoded.id,
-    };
-
+    req.user = { id: decoded.id };
     next();
   } catch (err) {
-    return sendError(
-      res,
-      401,
-      "INVALID_REFRESH_TOKEN",
-      "Invalid or expired refresh token",
+    return next(
+      new AppError(
+        401,
+        "INVALID_REFRESH_TOKEN",
+        "Invalid or expired refresh token",
+      ),
     );
   }
 };

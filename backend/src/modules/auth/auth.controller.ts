@@ -35,7 +35,7 @@ export const login = async (
 
     res.cookie("accessToken", result.accessToken, accessCookieOptions);
     res.cookie("refreshToken", result.refreshToken, refreshCookieOptions);
-
+    console.log(result.user);
     return sendSuccess<{ user: AdminPublic }>(
       res,
       { user: result.user },
@@ -47,12 +47,22 @@ export const login = async (
 };
 
 // ME — user object needed to restore session
+// auth.controller.ts
 export const me = async (req: Request, res: Response) => {
-  const user = await Admin.findById(req.user!.id).select("name email");
+  const admin = await Admin.findById(req.user!.id).select("_id name email");
 
-  if (!user) {
+  if (!admin) {
     return sendError(res, 404, "NOT_FOUND", "Admin not found");
   }
+
+  const adminId = admin._id.toString();
+
+  // map _id → id to match AdminPublic type
+  const user: AdminPublic = {
+    id: adminId,
+    name: admin.name,
+    email: admin.email,
+  };
 
   return sendSuccess<{ user: AdminPublic }>(res, { user }, "Admin fetched");
 };
@@ -65,4 +75,11 @@ export const refresh = (req: Request, res: Response) => {
   res.cookie("refreshToken", tokens.refreshToken, refreshCookieOptions);
 
   return sendSuccess(res, "Tokens refreshed");
+};
+
+// auth.controller.ts
+export const logout = async (req: Request, res: Response) => {
+  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
+  return sendSuccess(res, "Logged out successfully");
 };
