@@ -1,5 +1,11 @@
 import { Request, Response, NextFunction } from "express";
-import { signupService, loginService, refreshService } from "./auth.service.js";
+import {
+  signupService,
+  loginService,
+  refreshService,
+  updateNameService,
+  updatePasswordService,
+} from "./auth.service.js";
 import Admin from "./auth.model.js";
 import {
   accessCookieOptions,
@@ -46,8 +52,6 @@ export const login = async (
   }
 };
 
-// ME — user object needed to restore session
-// auth.controller.ts
 export const me = async (req: Request, res: Response) => {
   const admin = await Admin.findById(req.user!.id).select("_id name email");
 
@@ -82,4 +86,46 @@ export const logout = async (req: Request, res: Response) => {
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
   return sendSuccess(res, "Logged out successfully");
+};
+
+export const updateName = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { name } = req.body; // already validated + stripped by Zod middleware
+    const user = await updateNameService(req.user!.id, name);
+    return sendSuccess<{ user: AdminPublic }>(
+      res,
+      { user },
+      "Name updated successfully",
+    );
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ─── UPDATE PASSWORD ─────────────────────────────────────────────────────────
+
+/**
+ * PATCH /api/auth/me/password
+ * Protected — requires valid access token.
+ * Body: { currentPassword, newPassword, confirmPassword }
+ *
+ * confirmPassword equality is enforced at the schema level (Zod .refine),
+ * so only currentPassword + newPassword are forwarded to the service.
+ */
+export const updatePassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    await updatePasswordService(req.user!.id, currentPassword, newPassword);
+    return sendSuccess(res, "Password updated successfully");
+  } catch (err) {
+    next(err);
+  }
 };

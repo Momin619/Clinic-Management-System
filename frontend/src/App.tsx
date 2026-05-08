@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SignupPage from "./pages/Auth/SignupPage";
@@ -10,11 +10,14 @@ import { Toaster } from "react-hot-toast";
 import { setNavigator } from "./utils/navigation"
 import Navbar from './components/ui/Navbar'
 import { useAuth } from "./context/AuthContext";
+import Loader from "./components/ui/Loader";
+import ProtectedRoutes from "./components/Auth/ProtectedRoutes";
+import NotFound from "./components/ui/NotFound";
+
 export default function App()
 {
   const { loading } = useAuth();
   const navigate = useNavigate();
-
 
   useEffect(() =>
   {
@@ -23,20 +26,13 @@ export default function App()
 
   if (loading)
   {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-zinc-50 dark:bg-zinc-950">
-        <div className="w-5 h-5 border-2 border-zinc-300 border-t-zinc-900 rounded-full animate-spin" />
-      </div>
-    );
+    return <Loader />;  // ← was missing `return`
   }
-
 
   return (
     <>
-
-
       <Toaster
-        position="top-right"
+        position="top-center"
         toastOptions={{
           success: {
             style: {
@@ -56,17 +52,18 @@ export default function App()
       <Navbar />
 
       <Routes>
-        {/* Default redirect */}
-        <Route
-          path="/"
-          element={<Navigate to="/login" />}
-        />
-
-        {/* Auth routes */}
+        {/* Public routes */}
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/settings" element={<SettingPage />} />
 
+        {/* Protected routes */}
+        <Route element={<ProtectedRoutes />}>
+          <Route path="/settings" element={<SettingPage />} />
+          {/* add more protected routes here */}
+        </Route>
+
+        {/* Fallback */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );

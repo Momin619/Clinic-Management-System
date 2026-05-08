@@ -24,30 +24,29 @@ export default function Navbar()
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
         * { font-family: "Geist", sans-serif; }
+        @keyframes menuFadeIn {
+          from { opacity: 0; transform: translateY(-6px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .mobile-menu { animation: menuFadeIn 0.18s ease forwards; }
       `}</style>
 
-      <nav className="sticky top-0 z-50 bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800
-        px-6 md:px-12 lg:px-24 xl:px-40 py-4 flex items-center justify-between relative
-        transition-colors duration-300">
+      <nav className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 transition-colors duration-300 bg-white border-b dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 md:px-12 lg:px-24 xl:px-40">
 
         {/* Logo */}
-        <Link to="/">
-          {/* Light logo */}
-          <svg className="dark:hidden" width="151" height="36" viewBox="0 0 151 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M38.786 14.72q.696-.912 1.896-1.536t2.712-.624q1.728 0 3.144.864 1.44.84 2.256 2.376t.816 3.528-.816 3.576q-.816 1.56-2.256 2.448-1.416.864-3.144.864-1.512 0-2.688-.6-1.176-.624-1.92-1.536v8.208H36.05V12.776h2.736zm8.04 4.608q0-1.368-.576-2.352-.552-1.008-1.488-1.512a3.86 3.86 0 0 0-1.968-.528q-1.032 0-1.968.528-.912.528-1.488 1.536-.552 1.008-.552 2.376t.552 2.4q.576 1.008 1.488 1.536.936.528 1.968.528 1.056 0 1.968-.528.936-.552 1.488-1.584.576-1.032.576-2.4m8.226-4.632q.6-1.008 1.584-1.56 1.008-.576 2.376-.576v2.832h-.696q-1.608 0-2.448.816-.816.816-.816 2.832V26h-2.736V12.776h2.736zm18.595 4.368q0 .744-.096 1.344H63.447q.12 1.584 1.176 2.544t2.592.96q2.208 0 3.12-1.848h2.952q-.6 1.824-2.184 3-1.56 1.152-3.888 1.152-1.896 0-3.408-.84a6.3 6.3 0 0 1-2.352-2.4q-.84-1.56-.84-3.6t.816-3.576q.84-1.56 2.328-2.4 1.512-.84 3.456-.84 1.872 0 3.336.816a5.75 5.75 0 0 1 2.28 2.304q.816 1.464.816 3.384M70.79 18.2q-.024-1.512-1.08-2.424t-2.616-.912q-1.416 0-2.424.912-1.008.888-1.2 2.424zm8.284-3.456q.696-.96 1.896-1.56 1.224-.624 2.712-.624 1.752 0 3.168.84t2.232 2.4q.816 1.536.816 3.528t-.816 3.576q-.816 1.56-2.256 2.448-1.416.864-3.144.864-1.536 0-2.736-.6-1.176-.6-1.872-1.536V26H76.34V8.24h2.736zm8.04 4.584q0-1.368-.576-2.352-.552-1.008-1.488-1.512a3.86 3.86 0 0 0-1.968-.528q-1.032 0-1.968.528-.912.528-1.488 1.536-.552 1.008-.552 2.376t.552 2.4q.576 1.008 1.488 1.536.936.528 1.968.528 1.056 0 1.968-.528.936-.552 1.488-1.584.576-1.032.576-2.4m17.466-6.552V26h-2.736v-1.56q-.648.816-1.704 1.296a5.4 5.4 0 0 1-2.208.456q-1.56 0-2.808-.648-1.224-.648-1.944-1.92-.696-1.272-.696-3.072v-7.776h2.712v7.368q0 1.776.888 2.736.888.936 2.424.936t2.424-.936q.912-.96.912-2.736v-7.368zm5.002-1.752q-.744 0-1.248-.504a1.7 1.7 0 0 1-.504-1.248q0-.744.504-1.248a1.7 1.7 0 0 1 1.248-.504q.72 0 1.224.504t.504 1.248-.504 1.248a1.67 1.67 0 0 1-1.224.504m1.344 1.752V26h-2.736V12.776zm6.328-4.536V26h-2.736V8.24zm6.784 6.768v7.32q0 .744.336 1.08.36.312 1.2.312h1.68V26h-2.16q-1.848 0-2.832-.864t-.984-2.808v-7.32h-1.56v-2.232h1.56V9.488h2.76v3.288h3.216v2.232zm17.714-2.232V26h-2.736v-1.56q-.648.816-1.704 1.296a5.4 5.4 0 0 1-2.208.456q-1.56 0-2.808-.648-1.224-.648-1.944-1.92-.696-1.272-.696-3.072v-7.776h2.712v7.368q0 1.776.888 2.736.888.936 2.424.936t2.424-.936q.912-.96.912-2.736v-7.368zm5.002-1.752q-.744 0-1.248-.504a1.7 1.7 0 0 1-.504-1.248q0-.744.504-1.248a1.7 1.7 0 0 1 1.248-.504q.72 0 1.224.504t.504 1.248-.504 1.248a1.67 1.67 0 0 1-1.224.504m1.344 1.752V26h-2.736V12.776z" fill="#000" /><path d="m7.25 10.86 6 3.366 6-3.367m-12 20.176v-6.721l-6-3.367m24 0-6 3.367v6.72M1.61 14.42l11.64 6.54 11.64-6.54M13.25 34V20.947m12 5.18v-10.36c0-.454-.124-.9-.358-1.293a2.63 2.63 0 0 0-.975-.947l-9.333-5.18a2.73 2.73 0 0 0-2.667 0l-9.333 5.18a2.63 2.63 0 0 0-.976.947 2.54 2.54 0 0 0-.358 1.293v10.36c0 .454.124.9.358 1.293s.57.72.976.947l9.333 5.18a2.73 2.73 0 0 0 2.667 0l9.333-5.18a2.63 2.63 0 0 0 .975-.947 2.53 2.53 0 0 0 .358-1.293" stroke="#000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          {/* Dark logo */}
-          <svg className="hidden dark:block" width="151" height="36" viewBox="0 0 151 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M38.786 14.72q.696-.912 1.896-1.536t2.712-.624q1.728 0 3.144.864 1.44.84 2.256 2.376t.816 3.528-.816 3.576q-.816 1.56-2.256 2.448-1.416.864-3.144.864-1.512 0-2.688-.6-1.176-.624-1.92-1.536v8.208H36.05V12.776h2.736zm8.04 4.608q0-1.368-.576-2.352-.552-1.008-1.488-1.512a3.86 3.86 0 0 0-1.968-.528q-1.032 0-1.968.528-.912.528-1.488 1.536-.552 1.008-.552 2.376t.552 2.4q.576 1.008 1.488 1.536.936.528 1.968.528 1.056 0 1.968-.528.936-.552 1.488-1.584.576-1.032.576-2.4m8.226-4.632q.6-1.008 1.584-1.56 1.008-.576 2.376-.576v2.832h-.696q-1.608 0-2.448.816-.816.816-.816 2.832V26h-2.736V12.776h2.736zm18.595 4.368q0 .744-.096 1.344H63.447q.12 1.584 1.176 2.544t2.592.96q2.208 0 3.12-1.848h2.952q-.6 1.824-2.184 3-1.56 1.152-3.888 1.152-1.896 0-3.408-.84a6.3 6.3 0 0 1-2.352-2.4q-.84-1.56-.84-3.6t.816-3.576q.84-1.56 2.328-2.4 1.512-.84 3.456-.84 1.872 0 3.336.816a5.75 5.75 0 0 1 2.28 2.304q.816 1.464.816 3.384M70.79 18.2q-.024-1.512-1.08-2.424t-2.616-.912q-1.416 0-2.424.912-1.008.888-1.2 2.424zm8.284-3.456q.696-.96 1.896-1.56 1.224-.624 2.712-.624 1.752 0 3.168.84t2.232 2.4q.816 1.536.816 3.528t-.816 3.576q-.816 1.56-2.256 2.448-1.416.864-3.144.864-1.536 0-2.736-.6-1.176-.6-1.872-1.536V26H76.34V8.24h2.736zm8.04 4.584q0-1.368-.576-2.352-.552-1.008-1.488-1.512a3.86 3.86 0 0 0-1.968-.528q-1.032 0-1.968.528-.912.528-1.488 1.536-.552 1.008-.552 2.376t.552 2.4q.576 1.008 1.488 1.536.936.528 1.968.528 1.056 0 1.968-.528.936-.552 1.488-1.584.576-1.032.576-2.4m17.466-6.552V26h-2.736v-1.56q-.648.816-1.704 1.296a5.4 5.4 0 0 1-2.208.456q-1.56 0-2.808-.648-1.224-.648-1.944-1.92-.696-1.272-.696-3.072v-7.776h2.712v7.368q0 1.776.888 2.736.888.936 2.424.936t2.424-.936q.912-.96.912-2.736v-7.368zm5.002-1.752q-.744 0-1.248-.504a1.7 1.7 0 0 1-.504-1.248q0-.744.504-1.248a1.7 1.7 0 0 1 1.248-.504q.72 0 1.224.504t.504 1.248-.504 1.248a1.67 1.67 0 0 1-1.224.504m1.344 1.752V26h-2.736V12.776zm6.328-4.536V26h-2.736V8.24zm6.784 6.768v7.32q0 .744.336 1.08.36.312 1.2.312h1.68V26h-2.16q-1.848 0-2.832-.864t-.984-2.808v-7.32h-1.56v-2.232h1.56V9.488h2.76v3.288h3.216v2.232zm17.714-2.232V26h-2.736v-1.56q-.648.816-1.704 1.296a5.4 5.4 0 0 1-2.208.456q-1.56 0-2.808-.648-1.224-.648-1.944-1.92-.696-1.272-.696-3.072v-7.776h2.712v7.368q0 1.776.888 2.736.888.936 2.424.936t2.424-.936q.912-.96.912-2.736v-7.368zm5.002-1.752q-.744 0-1.248-.504a1.7 1.7 0 0 1-.504-1.248q0-.744.504-1.248a1.7 1.7 0 0 1 1.248-.504q.72 0 1.224.504t.504 1.248-.504 1.248a1.67 1.67 0 0 1-1.224.504m1.344 1.752V26h-2.736V12.776z" fill="#fff" /><path d="m7.25 10.86 6 3.366 6-3.367m-12 20.176v-6.721l-6-3.367m24 0-6 3.367v6.72M1.61 14.42l11.64 6.54 11.64-6.54M13.25 34V20.947m12 5.18v-10.36c0-.454-.124-.9-.358-1.293a2.63 2.63 0 0 0-.975-.947l-9.333-5.18a2.73 2.73 0 0 0-2.667 0l-9.333 5.18a2.63 2.63 0 0 0-.976.947 2.54 2.54 0 0 0-.358 1.293v10.36c0 .454.124.9.358 1.293s.57.72.976.947l9.333 5.18a2.73 2.73 0 0 0 2.667 0l9.333-5.18a2.63 2.63 0 0 0 .975-.947 2.53 2.53 0 0 0 .358-1.293" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        <Link to="/" className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-white">
+          Clinic
         </Link>
 
         {/* Desktop nav */}
-        <div className="hidden md:flex items-center bg-zinc-50 dark:bg-zinc-900
-          border border-zinc-200 dark:border-zinc-700 rounded-full px-1 py-1 gap-2">
+        <div className="items-center hidden gap-1 px-1 py-1 border rounded-full md:flex bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700">
           {navItems.map((item) => (
             <Link
               key={item.label}
               to={item.href}
-              className={`px-4 py-1.5 rounded-full text-sm transition-colors ${isActive(item.href)
-                ? "bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-600 font-medium text-zinc-900 dark:text-zinc-100 shadow-sm"
-                : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
+              className={`px-4 py-1.5 rounded-full text-sm transition-all duration-200 ${isActive(item.href)
+                ? "bg-zinc-900 text-zinc-50 dark:bg-zinc-100 dark:text-zinc-900 font-medium shadow-sm"
+                : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-zinc-200/60 dark:hover:bg-zinc-800/60"
                 }`}
             >
               {item.label}
@@ -56,13 +55,12 @@ export default function Navbar()
         </div>
 
         {/* Desktop right side */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="items-center hidden gap-3 md:flex">
           {!isLoggedIn ? (
             <>
               <Link
                 to="/login"
-                className="text-sm font-medium text-zinc-600 dark:text-zinc-400
-                  hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+                className="text-sm font-medium transition-colors text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
               >
                 Sign in
               </Link>
@@ -74,9 +72,9 @@ export default function Navbar()
                   dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
               >
                 Get started
-                <span className="size-7 rounded-full bg-white dark:bg-zinc-900 flex items-center justify-center">
+                <span className="flex items-center justify-center bg-white rounded-full size-7 dark:bg-zinc-900">
                   <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
-                    <path d="M.6 4.602h10m-4-4 4 4-4 4" stroke="#3f3f47" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M.6 4.602h10m-4-4 4 4-4 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-700 dark:text-zinc-300" />
                   </svg>
                 </span>
               </Link>
@@ -86,8 +84,8 @@ export default function Navbar()
               <Link
                 to="/settings"
                 className={`p-2 rounded-full transition-colors ${isActive("/settings")
-                  ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
-                  : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
+                  ? "bg-zinc-900 text-zinc-50 dark:bg-zinc-100 dark:text-zinc-900"
+                  : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-800 dark:hover:text-zinc-200"
                   }`}
                 title="Settings"
               >
@@ -98,17 +96,12 @@ export default function Navbar()
               </Link>
               <Link
                 to="/dashboard"
-                className="flex items-center gap-2.5 text-sm font-medium pl-5 pr-2 py-2
-                  rounded-full cursor-pointer transition-colors
-                  bg-zinc-900 text-zinc-50 hover:bg-zinc-700
-                  dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+                className={`text-sm font-medium px-5 py-2 rounded-full cursor-pointer transition-colors ${isActive("/dashboard")
+                  ? "bg-zinc-900 text-zinc-50 dark:bg-zinc-100 dark:text-zinc-900"
+                  : "bg-zinc-900 text-zinc-50 hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+                  }`}
               >
                 Dashboard
-                <span className="size-7 rounded-full bg-white dark:bg-zinc-900 flex items-center justify-center">
-                  <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
-                    <path d="M.6 4.602h10m-4-4 4 4-4 4" stroke="#3f3f47" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </span>
               </Link>
             </div>
           )}
@@ -118,18 +111,16 @@ export default function Navbar()
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className="md:hidden flex flex-col gap-1.5 cursor-pointer bg-transparent border-0 p-1"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
         >
-          <span className={`block w-6 h-0.5 bg-zinc-800 dark:bg-zinc-200 transition-transform ${menuOpen ? "rotate-45 translate-y-2" : ""}`} />
-          <span className={`block w-6 h-0.5 bg-zinc-800 dark:bg-zinc-200 transition-opacity ${menuOpen ? "opacity-0" : ""}`} />
-          <span className={`block w-6 h-0.5 bg-zinc-800 dark:bg-zinc-200 transition-transform ${menuOpen ? "-rotate-45 -translate-y-2" : ""}`} />
+          <span className={`block w-6 h-0.5 bg-zinc-800 dark:bg-zinc-200 transition-all duration-200 ${menuOpen ? "rotate-45 translate-y-2" : ""}`} />
+          <span className={`block w-6 h-0.5 bg-zinc-800 dark:bg-zinc-200 transition-all duration-200 ${menuOpen ? "opacity-0 scale-x-0" : ""}`} />
+          <span className={`block w-6 h-0.5 bg-zinc-800 dark:bg-zinc-200 transition-all duration-200 ${menuOpen ? "-rotate-45 -translate-y-2" : ""}`} />
         </button>
 
         {/* Mobile menu */}
         {menuOpen && (
-          <div className="absolute top-full left-0 w-full z-50
-            bg-white dark:bg-zinc-950
-            border-t border-zinc-200 dark:border-zinc-800
-            flex flex-col p-5 gap-1 md:hidden">
+          <div className="absolute left-0 z-50 flex flex-col w-full gap-1 p-4 bg-white border-t shadow-lg mobile-menu top-full dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 md:hidden">
 
             {navItems.map((item) => (
               <Link
@@ -137,22 +128,22 @@ export default function Navbar()
                 to={item.href}
                 onClick={() => setMenuOpen(false)}
                 className={`px-4 py-2.5 rounded-lg text-sm transition-colors ${isActive(item.href)
-                  ? "bg-zinc-100 dark:bg-zinc-800 font-medium text-zinc-900 dark:text-zinc-100"
-                  : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                  ? "bg-zinc-900 text-zinc-50 dark:bg-zinc-100 dark:text-zinc-900 font-medium"
+                  : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-zinc-800 dark:hover:text-zinc-200"
                   }`}
               >
                 {item.label}
               </Link>
             ))}
 
-            <div className="mt-3 flex flex-col gap-2">
+            <div className="flex flex-col gap-1 pt-3 mt-1 border-t border-zinc-100 dark:border-zinc-800">
               {!isLoggedIn ? (
                 <>
                   <Link
                     to="/login"
                     onClick={() => setMenuOpen(false)}
                     className="px-4 py-2.5 rounded-lg text-sm text-zinc-500 dark:text-zinc-400
-                      hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
+                      hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors"
                   >
                     Sign in
                   </Link>
@@ -160,27 +151,26 @@ export default function Navbar()
                     to="/signup"
                     onClick={() => setMenuOpen(false)}
                     className="flex items-center gap-2.5 text-sm font-medium px-5 py-2.5
-                      rounded-full w-fit transition-colors
+                      rounded-full w-fit transition-colors mt-1
                       bg-zinc-900 text-zinc-50 hover:bg-zinc-700
                       dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
                   >
                     Get started
-                    <span className="size-7 rounded-full bg-white dark:bg-zinc-900 flex items-center justify-center">
+                    <span className="flex items-center justify-center bg-white rounded-full size-7 dark:bg-zinc-900">
                       <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
-                        <path d="M.6 4.602h10m-4-4 4 4-4 4" stroke="#3f3f47" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M.6 4.602h10m-4-4 4 4-4 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-700 dark:text-zinc-300" />
                       </svg>
                     </span>
                   </Link>
                 </>
               ) : (
                 <>
-                  {/* ✅ Settings link — was missing on mobile */}
                   <Link
                     to="/settings"
                     onClick={() => setMenuOpen(false)}
                     className={`px-4 py-2.5 rounded-lg text-sm transition-colors ${isActive("/settings")
-                      ? "bg-zinc-100 dark:bg-zinc-800 font-medium text-zinc-900 dark:text-zinc-100"
-                      : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                      ? "bg-zinc-900 text-zinc-50 dark:bg-zinc-100 dark:text-zinc-900 font-medium"
+                      : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-zinc-800 dark:hover:text-zinc-200"
                       }`}
                   >
                     Settings
@@ -188,8 +178,8 @@ export default function Navbar()
                   <Link
                     to="/dashboard"
                     onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-2.5 text-sm font-medium px-5 py-2.5
-                      rounded-full w-fit transition-colors
+                    className="text-sm font-medium px-5 py-2.5
+                      rounded-full w-fit transition-colors mt-1
                       bg-zinc-900 text-zinc-50 hover:bg-zinc-700
                       dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
                   >

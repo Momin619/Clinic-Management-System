@@ -13,23 +13,23 @@ import type
   User,
 } from "../types/auth";
 
+import type { Dispatch, SetStateAction } from 'react'
 type AuthContextType = {
   user: User | null;
-  loading: boolean;
+  authChecked: boolean;
   login: (data: LoginData) => Promise<void>;
   signup: (data: SignupData) => Promise<void>;
   logout: () => void;
+  setUser: Dispatch<SetStateAction<User | null>>;
 };
-
 const AuthContext = createContext<AuthContextType>(null!);
 
 export const AuthProvider = ({ children }: any) =>
 {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true)
   // LOGIN
+  const [authChecked, setAuthChecked] = useState(false);
 
-  console.log('Login state', user)
 
   const login = async (data: LoginData) =>
   {
@@ -64,10 +64,9 @@ export const AuthProvider = ({ children }: any) =>
       setUser(null);
     } finally
     {
-      setLoading(false);       // ← always mark done
+      setAuthChecked(true);
     }
   };
-
   // AuthContext.tsx
   useEffect(() =>
   {
@@ -79,7 +78,7 @@ export const AuthProvider = ({ children }: any) =>
 
   return (
     <AuthContext.Provider
-      value={{ user, login, signup, logout, loading }}
+      value={{ user, login, signup, logout, authChecked, setUser }}
     >
       {children}
     </AuthContext.Provider>

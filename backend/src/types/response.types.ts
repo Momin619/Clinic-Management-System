@@ -8,6 +8,8 @@ export type ErrorCode =
   | "INVALID_REFRESH_TOKEN"
   | "AUTH_INVALID_CREDENTIALS"
   | "AUTH_EMAIL_TAKEN"
+  | "SAME_NAME"
+  | "NAME_TAKEN"
   // — validation —
   | "VALIDATION_ERROR"
   // — general —
