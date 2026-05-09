@@ -1,6 +1,6 @@
 // src/types/response.types.ts
 export type ErrorCode =
-  // — auth / token —
+  // ── auth / token ──────────────────────────────────────────────────────────
   | "NO_TOKEN"
   | "INVALID_TOKEN"
   | "TOKEN_EXPIRED"
@@ -10,14 +10,17 @@ export type ErrorCode =
   | "AUTH_EMAIL_TAKEN"
   | "SAME_NAME"
   | "NAME_TAKEN"
-  // — validation —
+  // ── validation ───────────────────────────────────────────────────────────
   | "VALIDATION_ERROR"
-  // — general —
+  // ── patient / appointment ─────────────────────────────────────────────────
+  | "PATIENT_NOT_FOUND"
+  | "APPOINTMENT_NOT_FOUND"
+  // ── general ──────────────────────────────────────────────────────────────
   | "UNAUTHORIZED"
   | "NOT_FOUND"
-  | "INTERNAL_ERROR" // ← was missing, used in errorHandler fallback
-  | "SERVER_ERROR" // keep if used in protect.ts sendError calls
-  | "AUTH_ERROR"; // ← was missing, used in protect.ts catch fallback // ← used in errorHandler.ts fallback;
+  | "INTERNAL_ERROR"
+  | "SERVER_ERROR"
+  | "AUTH_ERROR";
 
 export interface ApiError {
   success: false;

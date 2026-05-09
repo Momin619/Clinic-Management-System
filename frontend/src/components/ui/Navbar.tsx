@@ -10,7 +10,7 @@ export default function Navbar()
   const isLoggedIn = !!user;
 
   const navItems = [
-    { label: "Products", href: "/products" },
+    { label: "Add Appointment", href: "/add-appointment" },
     { label: "Services", href: "/services" },
     { label: "Apps", href: "/apps" },
     { label: "Pricing", href: "/pricing" },

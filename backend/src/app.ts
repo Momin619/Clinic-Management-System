@@ -3,10 +3,11 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 
 import authRouter from "./modules/auth/auth.routes.js";
+import appointmentRouter from "./modules/appointment/appointment.routes.js";
 import { requestLogger } from "./middleware/logger.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { CLIENT_URL } from "./config/env.js";
-
+import { AppError } from "./errors/AppError.js";
 const app = express();
 
 // 1️⃣ CORS (must be first for preflight requests)
@@ -28,10 +29,11 @@ app.use(requestLogger);
 
 // 4️⃣ Routes
 app.use("/api/auth", authRouter);
+app.use("/api/appointments", appointmentRouter);
 
 // 5️⃣ 404 handler (optional but recommended)
-app.use((req, res) => {
-  res.status(404).json({ message: "Route not found" });
+app.use((_req, _res, next) => {
+  next(new AppError(404, "NOT_FOUND", "Route not found"));
 });
 
 // 6️⃣ Global Error Handler (MUST be last)

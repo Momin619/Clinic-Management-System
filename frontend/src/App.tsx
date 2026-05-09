@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import SignupPage from "./pages/Auth/SignupPage";
 import LoginPage from "./pages/Auth/LoginPage";
 import SettingPage from "./pages/Setting/SettingPage";
+import AddAppointmentPage from "./pages/Appointment/AddAppointmentPage";
 import "./styles/output.css";
 import "./styles/index.css";
 import { Toaster } from "react-hot-toast";
@@ -64,6 +65,10 @@ export default function App()
         {/* Protected routes */}
         <Route element={<ProtectedRoutes />}>
           <Route path="/settings" element={<SettingPage />} />
+          {/* add more protected routes here */}
+        </Route>
+        <Route element={<ProtectedRoutes />}>
+          <Route path="/add-appointment" element={<AddAppointmentPage />} />
           {/* add more protected routes here */}
         </Route>
 
