@@ -4,11 +4,11 @@ import { useNavigate } from "react-router-dom";
 import SignupPage from "./pages/Auth/SignupPage";
 import LoginPage from "./pages/Auth/LoginPage";
 import SettingPage from "./pages/Setting/SettingPage";
-import './styles/output.css'
-import './styles/index.css'
+import "./styles/output.css";
+import "./styles/index.css";
 import { Toaster } from "react-hot-toast";
-import { setNavigator } from "./utils/navigation"
-import Navbar from './components/ui/Navbar'
+import { setNavigator } from "./utils/navigation";
+import Navbar from "./components/ui/Navbar";
 import { useAuth } from "./context/AuthContext";
 import Loader from "./components/ui/Loader";
 import ProtectedRoutes from "./components/Auth/ProtectedRoutes";
@@ -16,6 +16,8 @@ import NotFound from "./components/ui/NotFound";
 
 export default function App()
 {
+  // FIX: was `loading` (undefined) — now correctly reads the `loading` alias
+  // exported from AuthContext (which equals `!authChecked`).
   const { loading } = useAuth();
   const navigate = useNavigate();
 
@@ -24,9 +26,12 @@ export default function App()
     setNavigator(navigate);
   }, [navigate]);
 
+  // Show a full-page spinner until we know whether the user is logged in.
+  // Without this guard, the Navbar and protected routes briefly render in an
+  // unauthenticated state before fetchMe resolves, causing a flash to /login.
   if (loading)
   {
-    return <Loader />;  // ← was missing `return`
+    return <Loader />;
   }
 
   return (

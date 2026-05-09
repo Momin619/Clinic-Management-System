@@ -7,10 +7,6 @@ export interface UpdateNameResponse {
   user: User;
 }
 
-export interface UpdatePasswordResponse {
-  message: string;
-}
-
 // ─── Input shapes ─────────────────────────────────────────────────────────────
 
 export interface UpdateNameInput {
@@ -29,33 +25,18 @@ export interface UpdatePasswordInput {
  * PATCH /api/auth/me/name
  * Updates the authenticated admin's display name.
  */
+// ✅ needs .result — controller sends data payload
 export async function updateNameApi(
   data: UpdateNameInput,
 ): Promise<UpdateNameResponse> {
-  console.log("before request");
-
-  const response = await api.patch<UpdateNameResponse>("/auth/me/name", data);
-
-  console.log("after request");
-  console.log(response.data);
-
-  return response.data;
+  const response = await api.patch("/auth/me/name", data);
+  return response.data.result; // { user }
 }
-/**
- * PATCH /api/auth/me/password
- * Updates the authenticated admin's password.
- * Sends currentPassword + newPassword + confirmPassword to backend.
- */
+
+// ✅ no .result — controller sends message-only
 export async function updatePasswordApi(
   data: UpdatePasswordInput,
-): Promise<UpdatePasswordResponse> {
-  const response = await api.patch<UpdatePasswordResponse>(
-    "/auth/me/password",
-    {
-      currentPassword: data.currentPassword,
-      newPassword: data.newPassword,
-      confirmPassword: data.confirmPassword,
-    },
-  );
-  return response.data;
+): Promise<void> {
+  await api.patch("/auth/me/password", data);
+  // nothing useful to return; the component only cares if it throws or not
 }

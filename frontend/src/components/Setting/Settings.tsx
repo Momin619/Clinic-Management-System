@@ -73,7 +73,7 @@ export default function Settings()
       const result = await updateNameApi({ name: data.name });
       console.log(result)
       setUser?.(result.user);
-      toast.success("Display name updated successfully.");
+      toast.success("Name updated successfully.");
     } catch (err)
     {
       toast.error(getErrorMessage(err, "Failed to update name. Please try again."));
