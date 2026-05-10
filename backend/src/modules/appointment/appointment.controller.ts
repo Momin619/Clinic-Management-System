@@ -1,38 +1,67 @@
 // src/modules/appointment/appointment.controller.ts
-//
-// CONTROLLER LAYER — handles HTTP requests and responses ONLY.
-// No business logic, no DB queries. Everything is delegated to the service.
 
 import { Request, Response, NextFunction } from "express";
-import { createAppointmentService } from "./appointment.service.js";
+import {
+  createAppointmentService,
+  updateAppointmentStatusService,
+  getScheduledAppointmentsService,
+} from "./appointment.service.js";
 import { sendSuccess } from "../../utils/response-helper.js";
 import { IAppointmentPublic } from "./appointment.types.js";
 
-/**
- * POST /api/appointments
- *
- * Protected — requires a valid access token (enforced at the route level).
- * Validated — req.body is already validated and stripped by Zod middleware.
- *
- * On success: returns 201 with the created appointment + WhatsApp link.
- * On failure: forwards error to the global error handler via next(err).
- */
 export const createAppointment = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    const appointment = await createAppointmentService(
-      req.body,
-      req.user!.id, // guaranteed by the `protect` middleware
-    );
+    const appointment = await createAppointmentService(req.body, req.user!.id);
 
     return sendSuccess<{ appointment: IAppointmentPublic }>(
       res,
       { appointment },
       "Appointment created successfully",
       201,
+    );
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateAppointmentStatus = async (
+  req: Request<{ id: string }>, // ← fix: tell TypeScript the shape of params
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const appointment = await updateAppointmentStatusService(
+      req.params.id, // now TypeScript knows this is always string ✓
+      req.body,
+    );
+
+    return sendSuccess<{ appointment: IAppointmentPublic }>(
+      res,
+      { appointment },
+      `Appointment marked as ${req.body.status}`,
+      200,
+    );
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getAppointments = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const appointments = await getScheduledAppointmentsService();
+    return sendSuccess<{ appointments: IAppointmentPublic[] }>(
+      res,
+      { appointments },
+      "Scheduled appointments fetched successfully",
+      200,
     );
   } catch (err) {
     next(err);

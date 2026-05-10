@@ -11,7 +11,7 @@ export default function Navbar()
 
   const navItems = [
     { label: "Add Appointment", href: "/add-appointment" },
-    { label: "Services", href: "/services" },
+    { label: "Appointment", href: "/appointments" },
     { label: "Apps", href: "/apps" },
     { label: "Pricing", href: "/pricing" },
     { label: "About", href: "/about" },

@@ -1,32 +1,13 @@
-import React from "react";
-import { useForm } from "react-hook-form";
+// src/components/appointment/AddAppointment.tsx
+
+import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-hot-toast";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import { cn } from "../../lib/utils";
-import { api } from "../../api/axios";
-import type { AppointmentFormData, AppointmentResult } from "./appointment";
-
-const LabelInputContainer = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => (
-  <div className={cn("flex w-full flex-col space-y-2", className)}>
-    {children}
-  </div>
-);
-
-/** Converts native <input type="time"> 24h value ("14:30") → "2:30 PM" */
-const to12Hour = (time24: string): string =>
-{
-  const [h, m] = time24.split(":").map(Number);
-  const ampm = h >= 12 ? "PM" : "AM";
-  const h12 = h % 12 || 12;
-  return `${h12}:${m.toString().padStart(2, "0")} ${ampm}`;
-};
+import { Label } from "../../ui/label";
+import { Input } from "../../ui/input";
+import { api } from "../../../api/axios";
+import { DatePicker, TimePicker } from "../../ui/CustomPickers";
+import type { AppointmentFormData, AppointmentResult } from "../appointment";
+import LabelInputContainer from "../../ui/LabelInputContainer";
 
 export default function AddAppointment()
 {
@@ -34,6 +15,7 @@ export default function AddAppointment()
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<AppointmentFormData>();
 
@@ -41,33 +23,12 @@ export default function AddAppointment()
   {
     try
     {
-      const res = await api.post("/appointments/new", {
-        ...data,
-        time: to12Hour(data.time),
-      });
+      // TimePicker already outputs "H:MM AM/PM" — no conversion needed
+      const res = await api.post("/appointments/new", data);
 
       const appointment: AppointmentResult = res.data.result.appointment;
-
-      toast(
-        (t) => (
-          <div className="flex flex-col gap-1.5">
-            <p className="text-sm font-medium text-neutral-800">
-              Appointment booked!
-            </p>
-            <a
-              href={appointment.whatsappLink}
-              target="_blank"
-              rel="noreferrer"
-              onClick={() => toast.dismiss(t.id)}
-              className="text-xs font-medium text-green-600 underline hover:text-green-700 underline-offset-2"
-            >
-              Send WhatsApp confirmation →
-            </a>
-          </div>
-        ),
-        { duration: 8000, icon: "✅" },
-      );
-
+      window.open(appointment.whatsappLink, "_blank", "noopener,noreferrer");
+      toast("Appointment Created Successfully");
       reset();
     } catch (err: any)
     {
@@ -76,9 +37,7 @@ export default function AddAppointment()
   };
 
   return (
-    <div
-      className="w-full max-w-md px-8 py-10 mx-auto bg-white border shadow-lg rounded-2xl border-neutral-200 dark:bg-zinc-950 dark:border-zinc-800 dark:shadow-none"
-    >
+    <div className="w-full max-w-md px-8 py-10 mx-auto bg-white border shadow-lg rounded-2xl border-neutral-200 dark:bg-zinc-950 dark:border-zinc-800 dark:shadow-none">
       <h2 className="text-xl font-bold text-neutral-800 dark:text-neutral-200">
         New Appointment
       </h2>
@@ -93,7 +52,6 @@ export default function AddAppointment()
           Patient Information
         </p>
 
-        {/* Patient Name */}
         <LabelInputContainer className="mb-4">
           <Label htmlFor="patientName">Full Name</Label>
           <Input
@@ -110,7 +68,6 @@ export default function AddAppointment()
           )}
         </LabelInputContainer>
 
-        {/* Phone + Age — side by side */}
         <div className="flex flex-col mb-6 space-y-4 md:flex-row md:space-x-3 md:space-y-0">
           <LabelInputContainer>
             <Label htmlFor="patientPhone">Phone Number</Label>
@@ -154,7 +111,6 @@ export default function AddAppointment()
           Appointment Details
         </p>
 
-        {/* Doctor Name */}
         <LabelInputContainer className="mb-4">
           <Label htmlFor="doctorName">Doctor Name</Label>
           <Input
@@ -171,44 +127,48 @@ export default function AddAppointment()
           )}
         </LabelInputContainer>
 
-        {/* Date + Time — side by side */}
         <div className="flex flex-col mb-4 space-y-4 md:flex-row md:space-x-3 md:space-y-0">
           <LabelInputContainer>
-            <Label htmlFor="date">Date</Label>
-            <Input
-              id="date"
-              type="date"
-              {...register("date", {
-                required: "Date is required",
-              })}
+            <Label>Date</Label>
+            <Controller
+              name="date"
+              control={control}
+              rules={{ required: "Date is required" }}
+              render={({ field }) => (
+                <DatePicker
+                  value={field.value}
+                  onChange={field.onChange}
+                  placeholder="Pick a date"
+                  error={errors.date?.message}
+                />
+              )}
             />
-            {errors.date && (
-              <p className="text-xs text-red-500">{errors.date.message}</p>
-            )}
+            {errors.date && <p className="text-xs text-red-500">{errors.date.message}</p>}
           </LabelInputContainer>
 
           <LabelInputContainer>
-            <Label htmlFor="time">Time</Label>
-            <Input
-              id="time"
-              type="time"
-              {...register("time", {
-                required: "Time is required",
-              })}
+            <Label>Time</Label>
+            <Controller
+              name="time"
+              control={control}
+              rules={{ required: "Time is required" }}
+              render={({ field }) => (
+                <TimePicker
+                  value={field.value}
+                  onChange={field.onChange}
+                  placeholder="Pick a time"
+                  error={errors.time?.message}
+                />
+              )}
             />
-            {errors.time && (
-              <p className="text-xs text-red-500">{errors.time.message}</p>
-            )}
+            {errors.time && <p className="text-xs text-red-500">{errors.time.message}</p>}
           </LabelInputContainer>
         </div>
 
-        {/* Reason (optional) */}
         <LabelInputContainer className="mb-4">
           <Label htmlFor="reason">
             Reason{" "}
-            <span className="font-normal text-neutral-400 dark:text-neutral-500">
-              (optional)
-            </span>
+            <span className="font-normal text-neutral-400 dark:text-neutral-500">(optional)</span>
           </Label>
           <Input
             id="reason"
@@ -218,13 +178,10 @@ export default function AddAppointment()
           />
         </LabelInputContainer>
 
-        {/* Notes (optional) */}
         <LabelInputContainer className="mb-8">
           <Label htmlFor="notes">
             Notes{" "}
-            <span className="font-normal text-neutral-400 dark:text-neutral-500">
-              (optional)
-            </span>
+            <span className="font-normal text-neutral-400 dark:text-neutral-500">(optional)</span>
           </Label>
           <Input
             id="notes"
@@ -234,7 +191,6 @@ export default function AddAppointment()
           />
         </LabelInputContainer>
 
-        {/* Submit */}
         <button
           disabled={isSubmitting}
           type="submit"

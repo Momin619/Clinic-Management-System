@@ -20,8 +20,6 @@ export interface IPatient extends mongoose.Document {
   name: string;
   phone: string; // primary contact — used for WhatsApp confirmation link
   age: number;
-  email?: string;
-  gender?: "male" | "female" | "other";
 }
 
 const patientSchema = new Schema<IPatient>(
@@ -43,15 +41,6 @@ const patientSchema = new Schema<IPatient>(
       required: true,
       min: 1,
       max: 120,
-    },
-    email: {
-      type: String,
-      trim: true,
-      lowercase: true,
-    },
-    gender: {
-      type: String,
-      enum: ["male", "female", "other"],
     },
   },
   { timestamps: true },

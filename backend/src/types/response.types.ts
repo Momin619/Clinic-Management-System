@@ -15,6 +15,9 @@ export type ErrorCode =
   // ── patient / appointment ─────────────────────────────────────────────────
   | "PATIENT_NOT_FOUND"
   | "APPOINTMENT_NOT_FOUND"
+  | "INVALID_TIME"
+  | "APPOINTMENT_CONFLICT"
+  | "INVALID_STATUS_TRANSITION"
   // ── general ──────────────────────────────────────────────────────────────
   | "UNAUTHORIZED"
   | "NOT_FOUND"

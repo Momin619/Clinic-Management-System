@@ -4,14 +4,15 @@ import mongoose, { Schema, Types } from "mongoose";
 import { AppointmentStatus } from "./appointment.types.js";
 
 export interface IAppointment extends mongoose.Document {
-  patientId: Types.ObjectId; // ref → Patient collection
+  patientId: Types.ObjectId;
   doctorName: string;
   date: Date;
-  time: string; // stored as "HH:MM AM/PM" string (timezone-safe)
+  time: number; // minutes since midnight — e.g. 10:30 AM → 630
   reason?: string;
   status: AppointmentStatus;
-  notes?: string;
-  createdBy: Types.ObjectId; // ref → Admin — audit trail: who booked it
+  cost?: number; // consultation fee — filled when marking "completed"
+  completionNotes?: string; // doctor's notes — filled when marking "completed"
+  createdBy: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -33,9 +34,10 @@ const appointmentSchema = new Schema<IAppointment>(
       required: true,
     },
     time: {
-      type: String,
+      type: Number,
       required: true,
-      trim: true,
+      min: 0,
+      max: 1439, // 23:59 in minutes = 1439
     },
     reason: {
       type: String,
@@ -46,7 +48,11 @@ const appointmentSchema = new Schema<IAppointment>(
       enum: ["scheduled", "completed", "cancelled"],
       default: "scheduled",
     },
-    notes: {
+    cost: {
+      type: Number,
+      min: 0,
+    },
+    completionNotes: {
       type: String,
       trim: true,
     },

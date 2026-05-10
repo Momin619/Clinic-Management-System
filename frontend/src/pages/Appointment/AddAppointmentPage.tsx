@@ -1,5 +1,5 @@
 import React from 'react'
-import AddAppointment from '../../components/Appointment/AddAppointment'
+import AddAppointment from '../../components/Appointment/AddAppointment/AddAppointment'
 function AddAppointmentPage()
 {
   return (

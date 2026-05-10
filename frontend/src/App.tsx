@@ -5,6 +5,7 @@ import SignupPage from "./pages/Auth/SignupPage";
 import LoginPage from "./pages/Auth/LoginPage";
 import SettingPage from "./pages/Setting/SettingPage";
 import AddAppointmentPage from "./pages/Appointment/AddAppointmentPage";
+import AppointmentPage from "./pages/Appointment/AppointmentPage";
 import "./styles/output.css";
 import "./styles/index.css";
 import { Toaster } from "react-hot-toast";
@@ -69,6 +70,10 @@ export default function App()
         </Route>
         <Route element={<ProtectedRoutes />}>
           <Route path="/add-appointment" element={<AddAppointmentPage />} />
+          {/* add more protected routes here */}
+        </Route>
+        <Route element={<ProtectedRoutes />}>
+          <Route path="/appointments" element={<AppointmentPage />} />
           {/* add more protected routes here */}
         </Route>
 

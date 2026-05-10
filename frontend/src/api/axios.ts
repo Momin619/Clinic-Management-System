@@ -54,7 +54,8 @@ api.interceptors.response.use(
     //   • _retry not yet set  (guards against retrying the retry itself)
     if (
       error.response?.status === 401 &&
-      error.response?.data?.code === "TOKEN_EXPIRED" &&
+      (error.response?.data?.code === "TOKEN_EXPIRED" ||
+        error.response?.data?.code === "NO_TOKEN") &&
       !originalRequest._retry
     ) {
       originalRequest._retry = true; // mark so this config is never retried twice

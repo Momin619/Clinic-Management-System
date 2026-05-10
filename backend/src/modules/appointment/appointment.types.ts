@@ -1,28 +1,41 @@
 // src/modules/appointment/appointment.types.ts
 
 /**
- * INPUT: shape of data accepted from the HTTP request body.
- * Patient data is accepted inline — the service creates the Patient document
- * first, then creates the Appointment referencing it. This way the clinic
- * admin fills one form instead of managing patient IDs manually.
+ * INPUT: shape accepted by POST /appointments/new
+ *
+ * - notes is intentionally omitted — it was a pre-booking staff note field
+ *   that is no longer collected at creation time.
  */
 export interface IAppointmentInput {
-  // ── Patient info (created on the fly) ──────────────────────────────────────
   patientName: string;
   patientPhone: string;
   patientAge: number;
-
-  // ── Appointment info ────────────────────────────────────────────────────────
   doctorName: string;
-  date: string; // ISO-8601 date string, e.g. "2025-06-15"
-  time: string; // 12-hour format, e.g. "10:30 AM"
+  date: string;
+  time: string; // e.g. "10:30 AM"
   reason?: string;
-  notes?: string;
 }
 
 /**
- * PUBLIC: shape returned to the client in the API response.
- * Includes the generated WhatsApp confirmation link.
+ * INPUT: shape accepted by PATCH /appointments/:id/status
+ *
+ * - status is restricted to "completed" or "cancelled".
+ *   "scheduled" is only ever set at creation — never via this route.
+ * - cost is MANDATORY for "completed" (enforced by Zod schema + service layer).
+ * - completionNotes are OPTIONAL — the doctor may leave notes or not.
+ */
+export interface IUpdateStatusInput {
+  status: "completed" | "cancelled";
+  completionNotes?: string;
+  cost?: number; // required when status === "completed", validated in schema
+}
+
+/**
+ * PUBLIC RESPONSE: shape returned to the client for any appointment response.
+ *
+ * - notes is omitted — it was removed from the creation flow.
+ * - cost and completionNotes are optional here because they are only
+ *   present after an appointment is marked "completed".
  */
 export interface IAppointmentPublic {
   id: string;
@@ -32,14 +45,14 @@ export interface IAppointmentPublic {
     phone: string;
   };
   doctorName: string;
-  date: string; // ISO-8601, always UTC
-  time: string;
+  date: string; // ISO string, e.g. "2025-08-15T00:00:00.000Z"
+  time: string; // Human-readable, e.g. "10:30 AM"
   reason?: string;
   status: AppointmentStatus;
-  notes?: string;
-  whatsappLink: string; // pre-filled wa.me deep-link for confirmation
-  createdAt: string;
+  cost?: number;
+  completionNotes?: string;
+  whatsappLink: string;
+  createdAt: string; // ISO string
 }
 
-/** Lifecycle states of an appointment */
 export type AppointmentStatus = "scheduled" | "completed" | "cancelled";

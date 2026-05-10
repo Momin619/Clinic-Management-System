@@ -1,16 +1,27 @@
+// src/components/appointment/appointment.ts
+
+// ── Create Appointment ────────────────────────────────────────────────────────
+
 export type AppointmentFormData = {
-  // Patient info — submitted inline, backend creates Patient + Appointment together
   patientName: string;
   patientPhone: string;
   patientAge: number;
-
-  // Appointment info
   doctorName: string;
   date: string;
-  time: string; // native <input type="time"> value — converted to AM/PM before submit
+  time: string; // "H:MM AM/PM" format — TimePicker outputs this directly
   reason?: string;
-  notes?: string;
+  // notes removed — no longer collected at creation time
 };
+
+// ── Update Status ─────────────────────────────────────────────────────────────
+
+export type UpdateStatusFormData = {
+  status: "completed" | "cancelled";
+  cost?: number; // mandatory when status === "completed" (enforced in form)
+  completionNotes?: string; // optional — doctor's notes after visit
+};
+
+// ── API Response Shape ────────────────────────────────────────────────────────
 
 export type AppointmentResult = {
   id: string;
@@ -20,11 +31,12 @@ export type AppointmentResult = {
     phone: string;
   };
   doctorName: string;
-  date: string;
-  time: string;
+  date: string; // ISO string — format before display
+  time: string; // "H:MM AM/PM"
   reason?: string;
   status: "scheduled" | "completed" | "cancelled";
-  notes?: string;
+  cost?: number; // present only on completed appointments
+  completionNotes?: string; // present only on completed appointments
   whatsappLink: string;
-  createdAt: string;
+  createdAt: string; // ISO string
 };
