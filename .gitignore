@@ -36,3 +36,5 @@ Thumbs.db
 # TypeScript
 *.tsbuildinfo
 *.txt
+
+backend/src/modules/appointment/appointment.schema.test.ts

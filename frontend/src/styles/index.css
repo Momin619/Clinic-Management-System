@@ -16,3 +16,7 @@ body {
 }
 
 /* index.css */
+
+button {
+  cursor: pointer;
+}

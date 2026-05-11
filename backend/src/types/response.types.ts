@@ -10,6 +10,7 @@ export type ErrorCode =
   | "AUTH_EMAIL_TAKEN"
   | "SAME_NAME"
   | "NAME_TAKEN"
+  | "INVALID_STATUS"
   // ── validation ───────────────────────────────────────────────────────────
   | "VALIDATION_ERROR"
   // ── patient / appointment ─────────────────────────────────────────────────

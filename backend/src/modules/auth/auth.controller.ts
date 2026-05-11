@@ -11,7 +11,8 @@ import {
   accessCookieOptions,
   refreshCookieOptions,
 } from "../../config/cookieConfig.js";
-import { sendSuccess, sendError } from "../../utils/response-helper.js";
+import { sendSuccess } from "../../utils/response-helper.js";
+import { AppError } from "../../errors/AppError.js";
 import { AdminPublic } from "./auth.types.js";
 
 // SIGNUP — no data needed, just confirm it worked
@@ -55,9 +56,7 @@ export const login = async (
 export const me = async (req: Request, res: Response) => {
   const admin = await Admin.findById(req.user!.id).select("_id name email");
 
-  if (!admin) {
-    return sendError(res, 404, "NOT_FOUND", "Admin not found");
-  }
+  if (!admin) throw new AppError(404, "NOT_FOUND", "Admin not found");
 
   const adminId = admin._id.toString();
 

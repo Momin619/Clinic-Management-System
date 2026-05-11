@@ -25,13 +25,15 @@ export default function AddAppointment()
     {
       // TimePicker already outputs "H:MM AM/PM" — no conversion needed
       const res = await api.post("/appointments/new", data);
-
+      console.log(res)
       const appointment: AppointmentResult = res.data.result.appointment;
+      console.log(appointment.whatsappLink)
       window.open(appointment.whatsappLink, "_blank", "noopener,noreferrer");
       toast("Appointment Created Successfully");
       reset();
     } catch (err: any)
     {
+      console.log(err)
       toast.error(err.response?.data?.message || "Failed to book appointment");
     }
   };

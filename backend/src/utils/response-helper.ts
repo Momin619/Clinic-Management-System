@@ -1,19 +1,6 @@
 import { Response } from "express";
 import { ErrorCode, ApiOk, ApiResponse } from "../types/response.types.js";
 
-export const sendError = (
-  res: Response,
-  status: number,
-  code: ErrorCode,
-  message: string,
-) => {
-  return res.status(status).json({
-    success: false,
-    code,
-    message,
-  });
-};
-
 // overload 1: no data
 export function sendSuccess(
   res: Response,

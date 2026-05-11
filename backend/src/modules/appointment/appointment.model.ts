@@ -1,17 +1,15 @@
-// src/modules/appointment/appointment.model.ts
-
 import mongoose, { Schema, Types } from "mongoose";
 import { AppointmentStatus } from "./appointment.types.js";
 
 export interface IAppointment extends mongoose.Document {
   patientId: Types.ObjectId;
   doctorName: string;
-  date: Date;
-  time: number; // minutes since midnight — e.g. 10:30 AM → 630
+  date: string; // YYYY-MM-DD (stable format)
+  time: number; // minutes since midnight
   reason?: string;
   status: AppointmentStatus;
-  cost?: number; // consultation fee — filled when marking "completed"
-  completionNotes?: string; // doctor's notes — filled when marking "completed"
+  cost?: number;
+  completionNotes?: string;
   createdBy: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -30,14 +28,14 @@ const appointmentSchema = new Schema<IAppointment>(
       trim: true,
     },
     date: {
-      type: Date,
+      type: String,
       required: true,
     },
     time: {
       type: Number,
       required: true,
       min: 0,
-      max: 1439, // 23:59 in minutes = 1439
+      max: 1439,
     },
     reason: {
       type: String,
@@ -65,9 +63,4 @@ const appointmentSchema = new Schema<IAppointment>(
   { timestamps: true },
 );
 
-const Appointment = mongoose.model<IAppointment>(
-  "Appointment",
-  appointmentSchema,
-);
-
-export default Appointment;
+export default mongoose.model<IAppointment>("Appointment", appointmentSchema);

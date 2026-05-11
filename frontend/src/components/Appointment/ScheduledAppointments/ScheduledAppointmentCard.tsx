@@ -1,5 +1,5 @@
 import type { AppointmentResult } from '../appointment'
-import StatusBadge from './StatusBadge'
+import StatusBadge from '../../ui/StatusBadge'
 import { cn } from '../../../lib/utils'
 
 interface AppointmentCardProps
@@ -8,7 +8,7 @@ interface AppointmentCardProps
   onUpdateClick: (a: AppointmentResult) => void;
 }
 
-const AppointmentCard = ({ appointment, onUpdateClick }: AppointmentCardProps) =>
+const ScheduledAppointmentCard = ({ appointment, onUpdateClick }: AppointmentCardProps) =>
 {
   const formattedDate = new Date(appointment.date).toLocaleDateString("en-PK", {
     weekday: "short",
@@ -66,4 +66,4 @@ const AppointmentCard = ({ appointment, onUpdateClick }: AppointmentCardProps) =
   );
 };
 
-export default AppointmentCard
+export default ScheduledAppointmentCard

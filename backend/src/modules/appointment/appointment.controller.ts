@@ -1,13 +1,16 @@
-// src/modules/appointment/appointment.controller.ts
-
 import { Request, Response, NextFunction } from "express";
 import {
   createAppointmentService,
   updateAppointmentStatusService,
   getScheduledAppointmentsService,
+  getCompletedAppointmentsService,
 } from "./appointment.service.js";
 import { sendSuccess } from "../../utils/response-helper.js";
 import { IAppointmentPublic } from "./appointment.types.js";
+
+// ─────────────────────────────────────────────
+// CREATE APPOINTMENT
+// ─────────────────────────────────────────────
 
 export const createAppointment = async (
   req: Request,
@@ -15,7 +18,8 @@ export const createAppointment = async (
   next: NextFunction,
 ) => {
   try {
-    const appointment = await createAppointmentService(req.body, req.user!.id);
+    // ✅ no "!" needed if global typing is correct
+    const appointment = await createAppointmentService(req.body, req.user.id);
 
     return sendSuccess<{ appointment: IAppointmentPublic }>(
       res,
@@ -28,16 +32,28 @@ export const createAppointment = async (
   }
 };
 
+// ─────────────────────────────────────────────
+// UPDATE STATUS
+// ─────────────────────────────────────────────
+
+type Params = {
+  id: string;
+};
+
 export const updateAppointmentStatus = async (
-  req: Request<{ id: string }>, // ← fix: tell TypeScript the shape of params
+  req: Request<Params>,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    const appointment = await updateAppointmentStatusService(
-      req.params.id, // now TypeScript knows this is always string ✓
-      req.body,
-    );
+    const { id } = req.params;
+
+    // safety check (extra protection)
+    if (!id) {
+      throw new Error("Invalid appointment id");
+    }
+
+    const appointment = await updateAppointmentStatusService(id, req.body);
 
     return sendSuccess<{ appointment: IAppointmentPublic }>(
       res,
@@ -50,17 +66,43 @@ export const updateAppointmentStatus = async (
   }
 };
 
-export const getAppointments = async (
+// ─────────────────────────────────────────────
+// GET APPOINTMENTS
+// ─────────────────────────────────────────────
+
+export const getScheduledAppointments = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   try {
     const appointments = await getScheduledAppointmentsService();
+
     return sendSuccess<{ appointments: IAppointmentPublic[] }>(
       res,
       { appointments },
       "Scheduled appointments fetched successfully",
+      200,
+    );
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getCompletedAppointments = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const appointments = await getCompletedAppointmentsService();
+
+    return sendSuccess<{
+      appointments: Omit<IAppointmentPublic, "whatsappLink">[];
+    }>(
+      res,
+      { appointments },
+      "Completed appointments fetched successfully",
       200,
     );
   } catch (err) {

@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { api } from "../../../api/axios";
 import type { AppointmentResult } from "../appointment";
-import AppointmentCard from "./AppointmentCard";
+import ScheduledAppointmentCard from "./ScheduledAppointmentCard";
 import UpdateStatusModal from "./UpdateStatusModal";
-import SkeletonCard from "./SkeletonCard";
+import SkeletonCard from "../../ui/SkeletonCard";
 
-export default function AppointmentsPage()
+export default function ScheduledAppointments()
 {
   const [appointments, setAppointments] = useState<AppointmentResult[]>([]);
   const [loading, setLoading] = useState(true);
@@ -18,7 +18,7 @@ export default function AppointmentsPage()
     {
       try
       {
-        const res = await api.get("/appointments");
+        const res = await api.get("/appointments/scheduled");
         setAppointments(res.data.result.appointments);
       } catch (err: any)
       {
@@ -76,7 +76,7 @@ export default function AppointmentsPage()
             </p>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {appointments.map((appointment) => (
-                <AppointmentCard
+                <ScheduledAppointmentCard
                   key={appointment.id}
                   appointment={appointment}
                   onUpdateClick={setSelected}

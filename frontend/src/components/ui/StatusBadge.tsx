@@ -1,5 +1,5 @@
-import type { AppointmentResult } from '../appointment'
-import { cn } from '../../../lib/utils';
+import type { AppointmentResult } from '../Appointment/appointment'
+import { cn } from '../../lib/utils';
 const StatusBadge = ({ status }: { status: AppointmentResult["status"] }) =>
 {
   const styles: Record<AppointmentResult["status"], string> = {

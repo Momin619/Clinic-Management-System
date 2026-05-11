@@ -1,11 +1,11 @@
-// src/modules/appointment/appointment.routes.ts
-
 import express from "express";
 import {
   createAppointment,
   updateAppointmentStatus,
-  getAppointments,
+  getScheduledAppointments,
+  getCompletedAppointments,
 } from "./appointment.controller.js";
+
 import { protect } from "../../middleware/auth.middleware.js";
 import { validate } from "../../middleware/validate.js";
 import {
@@ -15,7 +15,9 @@ import {
 
 const appointmentRouter = express.Router();
 
-// POST /api/appointments/new
+// ─────────────────────────────────────────────
+// CREATE
+// ─────────────────────────────────────────────
 appointmentRouter.post(
   "/new",
   protect,
@@ -23,7 +25,9 @@ appointmentRouter.post(
   createAppointment,
 );
 
-// PATCH /api/appointments/:id/status
+// ─────────────────────────────────────────────
+// UPDATE STATUS
+// ─────────────────────────────────────────────
 appointmentRouter.patch(
   "/:id/status",
   protect,
@@ -31,5 +35,14 @@ appointmentRouter.patch(
   updateAppointmentStatus,
 );
 
-appointmentRouter.get("/", protect, getAppointments);
+// ─────────────────────────────────────────────
+// GET SCHEDULED
+// ─────────────────────────────────────────────
+appointmentRouter.get("/scheduled", protect, getScheduledAppointments);
+
+// ─────────────────────────────────────────────
+// GET COMPLETED
+// ─────────────────────────────────────────────
+appointmentRouter.get("/completed", protect, getCompletedAppointments);
+
 export default appointmentRouter;
