@@ -1,4 +1,4 @@
-import type { AppointmentResult } from '../Appointment/appointment'
+import type { AppointmentResult } from '../Appointment/Appointment/appointment'
 import { cn } from '../../lib/utils';
 const StatusBadge = ({ status }: { status: AppointmentResult["status"] }) =>
 {

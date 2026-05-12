@@ -1,12 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import {
   createAppointmentService,
+  getAppointmentsService,
   updateAppointmentStatusService,
-  getScheduledAppointmentsService,
-  getCompletedAppointmentsService,
 } from "./appointment.service.js";
 import { sendSuccess } from "../../utils/response-helper.js";
-import { IAppointmentPublic } from "./appointment.types.js";
+import { IAppointmentPublic, Params } from "./appointment.types.js";
 
 // ─────────────────────────────────────────────
 // CREATE APPOINTMENT
@@ -36,8 +35,25 @@ export const createAppointment = async (
 // UPDATE STATUS
 // ─────────────────────────────────────────────
 
-type Params = {
-  id: string;
+export const getAppointments = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { status = "all", search = "", page = "1", limit = "10" } = req.query;
+
+    const result = await getAppointmentsService({
+      status: String(status),
+      search: String(search).trim(),
+      page: Number(page),
+      limit: Number(limit),
+    });
+
+    return sendSuccess(res, result, "Appointments fetched successfully");
+  } catch (err) {
+    next(err);
+  }
 };
 
 export const updateAppointmentStatus = async (
@@ -59,50 +75,6 @@ export const updateAppointmentStatus = async (
       res,
       { appointment },
       `Appointment marked as ${req.body.status}`,
-      200,
-    );
-  } catch (err) {
-    next(err);
-  }
-};
-
-// ─────────────────────────────────────────────
-// GET APPOINTMENTS
-// ─────────────────────────────────────────────
-
-export const getScheduledAppointments = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const appointments = await getScheduledAppointmentsService();
-
-    return sendSuccess<{ appointments: IAppointmentPublic[] }>(
-      res,
-      { appointments },
-      "Scheduled appointments fetched successfully",
-      200,
-    );
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const getCompletedAppointments = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const appointments = await getCompletedAppointmentsService();
-
-    return sendSuccess<{
-      appointments: Omit<IAppointmentPublic, "whatsappLink">[];
-    }>(
-      res,
-      { appointments },
-      "Completed appointments fetched successfully",
       200,
     );
   } catch (err) {

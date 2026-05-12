@@ -56,3 +56,7 @@ export interface IAppointmentPublic {
 }
 
 export type AppointmentStatus = "scheduled" | "completed" | "cancelled";
+
+export type Params = {
+  id: string;
+};

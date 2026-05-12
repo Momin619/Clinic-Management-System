@@ -6,9 +6,9 @@ import { Label } from "../../ui/label";
 import { Input } from "../../ui/input";
 import { api } from "../../../api/axios";
 import { DatePicker, TimePicker } from "../../ui/CustomPickers";
-import type { AppointmentFormData, AppointmentResult } from "../appointment";
+import type { AppointmentFormData, AppointmentResult } from "../Appointment/appointment";
 import LabelInputContainer from "../../ui/LabelInputContainer";
-
+import { useAppNavigate } from '../../../hooks/useAppNavigate'
 export default function AddAppointment()
 {
   const {
@@ -18,6 +18,8 @@ export default function AddAppointment()
     control,
     formState: { errors, isSubmitting },
   } = useForm<AppointmentFormData>();
+
+  const { goTo } = useAppNavigate()
 
   const onSubmit = async (data: AppointmentFormData) =>
   {
@@ -29,7 +31,8 @@ export default function AddAppointment()
       const appointment: AppointmentResult = res.data.result.appointment;
       console.log(appointment.whatsappLink)
       window.open(appointment.whatsappLink, "_blank", "noopener,noreferrer");
-      toast("Appointment Created Successfully");
+      toast.success("Appointment Created Successfully");
+      goTo('/appointments')
       reset();
     } catch (err: any)
     {

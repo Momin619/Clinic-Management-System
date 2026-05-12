@@ -7,41 +7,14 @@ import {
 } from "./appointment.types.js";
 import { buildWhatsAppLink } from "../../utils/whatsapp.js";
 import { AppError } from "../../errors/AppError.js";
-import { IPatient } from "./patient.model.js";
-
+import {
+  toMinutes,
+  formatDateForDisplay,
+  fromMinutes,
+} from "../../utils/time.js";
 // ─────────────────────────────────────────────
 // HELPERS
 // ─────────────────────────────────────────────
-
-const toMinutes = (time: string): number => {
-  const match = time.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-  if (!match) throw new AppError(400, "INVALID_TIME", "Invalid time format");
-
-  let h = Number(match[1]) % 12;
-  if (match[3].toUpperCase() === "PM") h += 12;
-
-  return h * 60 + Number(match[2]);
-};
-
-const fromMinutes = (mins: number): string => {
-  const h24 = Math.floor(mins / 60);
-  const m = mins % 60;
-  const period = h24 >= 12 ? "PM" : "AM";
-  const h12 = h24 % 12 || 12;
-
-  return `${h12}:${String(m).padStart(2, "0")} ${period}`;
-};
-
-const formatDateForDisplay = (dateStr: string) => {
-  const [y, m, d] = dateStr.split("-").map(Number);
-
-  return new Date(y, m - 1, d).toLocaleDateString("en-PK", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-};
 
 // ─────────────────────────────────────────────
 // CREATE APPOINTMENT
@@ -174,63 +147,157 @@ export const updateAppointmentStatusService = async (
 // GET SCHEDULED APPOINTMENTS
 // ─────────────────────────────────────────────
 
-export const getScheduledAppointmentsService = async (): Promise<
-  IAppointmentPublic[]
-> => {
-  const appointments = await Appointment.find({ status: "scheduled" })
-    .populate("patientId")
-    .sort({ date: 1, time: 1 });
+export const getAppointmentsService = async ({
+  status,
+  search,
+  page,
+  limit,
+}: {
+  status: string;
+  search: string;
+  page: number;
+  limit: number;
+}) => {
+  // ─────────────────────────────────────────────
+  // 0. SAFETY (pagination protection)
+  // ─────────────────────────────────────────────
+  const safePage = Math.max(1, page);
+  const safeLimit = Math.min(Math.max(1, limit), 50); // max 50 per page
+  const skip = (safePage - 1) * safeLimit;
 
-  return appointments.map((appointment: any) => {
-    const patient = appointment.patientId as IPatient;
+  // ─────────────────────────────────────────────
+  // 1. BASE PIPELINE
+  // ─────────────────────────────────────────────
+  const pipeline: any[] = [];
 
-    return {
-      id: appointment._id.toString(),
-      patient: {
-        id: patient._id.toString(),
-        name: patient.name,
-        phone: patient.phone,
+  // ─────────────────────────────────────────────
+  // 2. STATUS FILTER
+  // ─────────────────────────────────────────────
+  if (status && status !== "all") {
+    pipeline.push({
+      $match: {
+        status,
       },
-      doctorName: appointment.doctorName,
-      date: appointment.date,
-      time: fromMinutes(appointment.time),
-      reason: appointment.reason,
-      status: appointment.status,
-      whatsappLink: buildWhatsAppLink({
-        phone: patient.phone,
-        patientName: patient.name,
-        doctorName: appointment.doctorName,
-        date: formatDateForDisplay(appointment.date),
-        time: fromMinutes(appointment.time),
-      }),
-      createdAt: appointment.createdAt.toISOString(),
-    };
+    });
+  }
+
+  // ─────────────────────────────────────────────
+  // 3. JOIN PATIENT COLLECTION
+  // ─────────────────────────────────────────────
+  pipeline.push({
+    $lookup: {
+      from: "patients",
+      localField: "patientId",
+      foreignField: "_id",
+      as: "patient",
+    },
   });
-};
 
-export const getCompletedAppointmentsService = async () => {
-  const appointments = await Appointment.find({ status: "completed" })
-    .populate<{ patientId: IPatient }>("patientId")
-    .sort({ updatedAt: -1 });
+  // convert array → object (safe)
+  pipeline.push({
+    $unwind: {
+      path: "$patient",
+      preserveNullAndEmptyArrays: false,
+    },
+  });
 
-  return appointments.map((appointment) => {
-    const patient = appointment.patientId;
+  // ─────────────────────────────────────────────
+  // 4. SEARCH FILTER
+  // ─────────────────────────────────────────────
+  if (search && search.trim() !== "") {
+    const isNumber = !isNaN(Number(search));
 
-    return {
-      id: appointment._id.toString(),
-      patient: {
-        id: patient._id.toString(),
-        name: patient.name,
-        phone: patient.phone,
+    pipeline.push({
+      $match: {
+        $or: [
+          {
+            doctorName: {
+              $regex: search,
+              $options: "i",
+            },
+          },
+          {
+            "patient.name": {
+              $regex: search,
+              $options: "i",
+            },
+          },
+          {
+            "patient.phone": {
+              $regex: search,
+              $options: "i",
+            },
+          },
+          ...(isNumber
+            ? [
+                {
+                  "patient.age": Number(search),
+                },
+              ]
+            : []),
+        ],
       },
-      doctorName: appointment.doctorName,
-      date: appointment.date,
-      time: fromMinutes(appointment.time),
-      reason: appointment.reason,
-      status: appointment.status,
-      cost: appointment.cost,
-      completionNotes: appointment.completionNotes,
-      createdAt: appointment.createdAt.toISOString(),
-    };
+    });
+  }
+
+  // ─────────────────────────────────────────────
+  // 5. SORTING (latest first)
+  // ─────────────────────────────────────────────
+  pipeline.push({
+    $sort: {
+      createdAt: -1,
+    },
   });
+
+  // ─────────────────────────────────────────────
+  // 6. PAGINATION + COUNT
+  // ─────────────────────────────────────────────
+  pipeline.push({
+    $facet: {
+      data: [{ $skip: skip }, { $limit: safeLimit }],
+      totalCount: [{ $count: "count" }],
+    },
+  });
+
+  // ─────────────────────────────────────────────
+  // 7. EXECUTE
+  // ─────────────────────────────────────────────
+  const result = await Appointment.aggregate(pipeline);
+
+  const appointments = result?.[0]?.data || [];
+  const total = result?.[0]?.totalCount?.[0]?.count || 0;
+
+  // ─────────────────────────────────────────────
+  // 8. FORMAT RESPONSE
+  // ─────────────────────────────────────────────
+  return {
+    pagination: {
+      page: safePage,
+      limit: safeLimit,
+      total,
+      pages: Math.ceil(total / safeLimit),
+    },
+
+    appointments: appointments.map((a: any) => ({
+      id: a._id.toString(),
+
+      patient: {
+        id: a.patient._id.toString(),
+        name: a.patient.name,
+        phone: a.patient.phone,
+        age: a.patient.age,
+      },
+
+      doctorName: a.doctorName,
+      date: a.date,
+
+      // ✅ FIX: convert minutes → readable time
+      time: fromMinutes(a.time),
+
+      status: a.status,
+      cost: a.cost,
+      completionNotes: a.completionNotes,
+      createdAt: a.createdAt.toISOString(),
+    })),
+  };
 };

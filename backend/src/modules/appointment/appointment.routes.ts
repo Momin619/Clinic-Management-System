@@ -1,9 +1,8 @@
 import express from "express";
 import {
   createAppointment,
+  getAppointments,
   updateAppointmentStatus,
-  getScheduledAppointments,
-  getCompletedAppointments,
 } from "./appointment.controller.js";
 
 import { protect } from "../../middleware/auth.middleware.js";
@@ -25,9 +24,6 @@ appointmentRouter.post(
   createAppointment,
 );
 
-// ─────────────────────────────────────────────
-// UPDATE STATUS
-// ─────────────────────────────────────────────
 appointmentRouter.patch(
   "/:id/status",
   protect,
@@ -35,14 +31,6 @@ appointmentRouter.patch(
   updateAppointmentStatus,
 );
 
-// ─────────────────────────────────────────────
-// GET SCHEDULED
-// ─────────────────────────────────────────────
-appointmentRouter.get("/scheduled", protect, getScheduledAppointments);
-
-// ─────────────────────────────────────────────
-// GET COMPLETED
-// ─────────────────────────────────────────────
-appointmentRouter.get("/completed", protect, getCompletedAppointments);
-
+// ⭐ NEW MAIN ROUTE (REPLACES ALL LIST ROUTES)
+appointmentRouter.get("/", protect, getAppointments);
 export default appointmentRouter;

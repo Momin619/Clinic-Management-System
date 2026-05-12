@@ -1,5 +1,5 @@
 
-import type { UpdateStatusFormData, AppointmentResult } from '../appointment'
+import type { UpdateStatusFormData, AppointmentResult } from './appointment'
 import { api } from "../../../api/axios";
 import { useForm } from 'react-hook-form'
 import { toast } from "react-hot-toast";
@@ -7,13 +7,14 @@ import LabelInputContainer from "../../ui/LabelInputContainer";
 import { cn } from '../../../lib/utils';
 import { Label } from "../../ui/label";
 import { Input } from "../../ui/input";
+import type { Status } from './appointment';
 interface UpdateStatusModalProps
 {
   appointment: AppointmentResult;
   onClose: () => void;
-  onSuccess: (id: string) => void;
+  onSuccess: (id: string, status: Status) => void;
 }
-const UpdateStatusModal = ({
+export const UpdateStatusModal = ({
   appointment,
   onClose,
   onSuccess,
@@ -39,7 +40,9 @@ const UpdateStatusModal = ({
       await api.patch(`/appointments/${appointment.id}/status`, data);
       toast.success(`Appointment marked as ${data.status}`);
       reset();
-      onSuccess(appointment.id); // removes the card from the list
+      onSuccess(appointment.id, data.status);
+      handleClose();
+      // removes the card from the list
     } catch (err: any)
     {
       toast.error(
@@ -207,4 +210,3 @@ const UpdateStatusModal = ({
   );
 };
 
-export default UpdateStatusModal

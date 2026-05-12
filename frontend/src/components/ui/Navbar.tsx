@@ -11,10 +11,8 @@ export default function Navbar()
 
   const navItems = [
     { label: "Add Appointment", href: "/add-appointment" },
-    { label: "Scheduled Appointment", href: "/scheduled-appointments" },
-    { label: "Completed Appointments", href: "/completed-appointments" },
-    { label: "Pricing", href: "/pricing" },
-    { label: "About", href: "/about" },
+    { label: "Appointments", href: "/appointments" },
+
   ];
 
   const isActive = (href: string) => pathname === href;

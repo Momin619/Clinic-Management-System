@@ -40,3 +40,17 @@ export type AppointmentResult = {
   whatsappLink: string;
   createdAt: string; // ISO string
 };
+
+export type Appointment = {
+  id: string;
+  patient: {
+    name: string;
+    phone: string;
+  };
+  doctorName: string;
+  date: string;
+  time: string;
+  status: string;
+};
+
+export type Status = "all" | "scheduled" | "completed" | "cancelled";
